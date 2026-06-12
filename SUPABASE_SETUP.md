@@ -13,12 +13,21 @@ Crear `.env.local` copiando `.env.example` y completando:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY` (solo para server-side; no usar en el navegador)
 
-## 3. Crear bucket de Storage
-1. Ir a `Storage` en el proyecto Supabase.
-2. Crear un bucket llamado `product-photos`.
-3. Recomiendo mantenerlo privado y servir fotos con URLs firmadas.
-   - Si quieres un acceso más rápido ahora, puedes crear el bucket como público.
-4. Desde el frontend, sube las fotos con `supabase.storage.from('product-photos').upload(...)`.
+## 3. Crear bucket de Storage (OBLIGATORIO para las fotos)
+La despensa exige una foto por producto, así que sin el bucket la subida falla.
+
+**Opción A (recomendada, automática):** abre el SQL editor y ejecuta `supabase-storage.sql`.
+Crea el bucket `product-photos` (público) y las políticas para que cada usuario
+suba/borre solo en su propia carpeta (`<uid>/<archivo>`).
+
+**Opción B (manual desde el panel):**
+1. Ir a `Storage` → `New bucket`.
+2. Nombre: `product-photos`. Marca **Public bucket**.
+3. Aun así, añade las políticas de `insert/update/delete` de `supabase-storage.sql`
+   para que los usuarios autenticados puedan subir (un bucket público solo abre la lectura).
+
+La app sube las fotos con `supabase.storage.from('product-photos').upload(...)`
+y guarda la URL pública en `productos.foto_url`.
 
 ## 4. Ejecutar el SQL
 1. Abrir `supabase.sql` y ejecutarlo en el SQL editor.
